@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/messagebubble.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/components/sidebar.tsx","./src/components/userpanel.tsx","./src/lib/auth.ts","./src/lib/supabase.ts","./src/lib/supabaseapi.ts","./src/pages/chatpage.tsx","./src/pages/loginpage.tsx","./src/pages/protectedroute.tsx","./src/pages/registerpage.tsx"],"version":"5.8.3"}
