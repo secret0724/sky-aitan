@@ -19,13 +19,16 @@
 .sidebar-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   margin-bottom: 20px;
+  gap: 120px;
+  position: relative;
 }
 
 .sidebar-header h2 {
   font-size: 20px;
   color: #007bff;
+  flex-grow: 1;
 }
 
 .close-btn {
@@ -77,16 +80,12 @@
 
 .history-item {
   position: relative;
-  padding: 4px 0;
   font-size: 14px;
   color: #444;
   border-left: 2px solid transparent;
   border-radius: 6px;
   transition: background 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 6px;
+  padding: 4px 0;
 }
 
 .history-item:hover {
@@ -98,39 +97,28 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
   width: 100%;
-  overflow: hidden;
+  gap: 6px;
 }
 
 .history-title span {
-  flex: 1;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  padding-right: 8px;
+  padding-right: 140px;
+  cursor: pointer;
 }
 
 .menu-icon {
-  background: none;
-  border: none;
+  justify-content: right;
   cursor: pointer;
-  font-size: 18px;
-  color: #444;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 4px;
-  width: 28px;
-  height: 28px;
-  min-width: 28px;
+  z-index: 2;
 }
+
 
 .floating-menu {
   position: absolute;
   right: 0;
   top: 100%;
-  margin-top: 6px;
+  margin-top: 10px;
   width: 150px;
   background: white;
   border: 1px solid #ddd;
