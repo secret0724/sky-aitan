@@ -1,25 +1,11 @@
 // src/App.tsx
-import { useEffect, useState } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import ChatPage from './pages/ChatPage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    const checkLocalAuth = () => {
-      const user = localStorage.getItem('user')
-      setIsAuthenticated(!!user)
-      setLoading(false)
-    }
-
-    checkLocalAuth()
-  }, [])
-
-  if (loading) return <p>Loading...</p>
+  const isAuthenticated = !!localStorage.getItem('user') // langsung baca dari localStorage
 
   return (
     <Routes>
