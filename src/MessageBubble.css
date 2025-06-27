@@ -1,0 +1,28 @@
+.bubble {
+  max-width: 80%;
+  padding: 10px 14px;
+  border-radius: 16px;
+  font-size: 15px;
+  line-height: 1.5;
+  word-wrap: break-word;
+  margin-bottom: 12px; /* Jarak antar bubble */
+  display: inline-block;
+}
+
+/* Bubble dari user (kanan) */
+.user {
+  align-self: flex-end;
+  background-color: #007bff;
+  color: white;
+  border-bottom-right-radius: 4px;
+  margin-left: auto;
+}
+
+/* Bubble dari AI (kiri) */
+.ai {
+  align-self: flex-start;
+  background-color: #f0f0f0;
+  color: #333;
+  border-bottom-left-radius: 4px;
+  margin-right: auto;
+}

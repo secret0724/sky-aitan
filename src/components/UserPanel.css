@@ -1,0 +1,56 @@
+.user-panel {
+  position: fixed;
+  top: 0;
+  right: -260px;
+  width: 260px;
+  height: 100vh;
+  background-color: #f9f9ff;
+  box-shadow: -2px 0 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  transition: right 0.3s ease;
+  z-index: 1000;
+}
+
+.user-panel.open {
+  right: 0;
+}
+
+.user-panel-header {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.user-panel-content {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.user-panel-content button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: transparent;
+  border: none;
+  font-size: 15px;
+  padding: 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+  color: #333;
+  text-align: left;
+}
+
+.user-panel-content button:hover {
+  background-color: #e6f0ff;
+  border-radius: 8px;
+}
+
+.user-email {
+  font-weight: bold;
+  font-size: 15px;
+  color: #007bff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
