@@ -29,7 +29,7 @@ const ChatPage = () => {
 
   const user = JSON.parse(localStorage.getItem('user') || '{}')
   const email = user.email || 'user@skyaitan.com'
-  const apiKey = import.meta.env.VITE_AI_API_KEY
+  const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY
 
   useEffect(() => {
     const saved = localStorage.getItem('skyaitan-all-history')
@@ -100,13 +100,11 @@ const ChatPage = () => {
     setMessages(updatedMessages)
     setInput('')
 
-    // Simpan riwayat sementara sebelum respon AI
-    const tempHistory = history.map((item: HistoryItem) =>
+    const tempHistory = history.map(item =>
       item.id === activeId ? { ...item, messages: updatedMessages } : item
     )
     saveHistory(tempHistory)
 
-    // Kirim ke AI
     try {
       const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
@@ -138,7 +136,7 @@ const ChatPage = () => {
       const finalMessages = [...updatedMessages, aiMsg]
       setMessages(finalMessages)
 
-      const updatedHistory = history.map((item: HistoryItem) =>
+      const updatedHistory = history.map(item =>
         item.id === activeId ? { ...item, messages: finalMessages } : item
       )
       saveHistory(updatedHistory)
@@ -156,16 +154,15 @@ const ChatPage = () => {
   const handleRename = (id: string) => {
     const newTitle = prompt('Ganti nama chat:')
     if (!newTitle) return
-
-    const updatedHistory = history.map((item: HistoryItem) =>
+    const updated = history.map(item =>
       item.id === id ? { ...item, title: newTitle } : item
     )
-    saveHistory(updatedHistory)
+    saveHistory(updated)
   }
 
   const handleDelete = (id: string) => {
     if (!confirm('Yakin ingin menghapus chat ini?')) return
-    const updated = history.filter((item: HistoryItem) => item.id !== id)
+    const updated = history.filter(item => item.id !== id)
     saveHistory(updated)
     if (activeId === id && updated.length > 0) {
       setMessages(updated[0].messages)
