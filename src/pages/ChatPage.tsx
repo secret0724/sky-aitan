@@ -25,10 +25,11 @@ const ChatPage = () => {
   const [messages, setMessages] = useState<Message[]>([])
   const [history, setHistory] = useState<HistoryItem[]>([])
   const [activeId, setActiveId] = useState<string | null>(null)
-
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
+
   const user = JSON.parse(localStorage.getItem('user') || '{}')
   const email = user.email || 'user@skyaitan.com'
+  const apiKey = import.meta.env.VITE_AI_API_KEY
 
   useEffect(() => {
     const saved = localStorage.getItem('skyaitan-all-history')
@@ -87,24 +88,53 @@ const ChatPage = () => {
     setSidebarOpen(false)
   }
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!input.trim()) return
     const newMsg: Message = {
       sender: 'user',
       text: input,
       timestamp: new Date().toISOString()
     }
-    const updatedMessages = [...messages, newMsg]
 
+    const updatedMessages = [...messages, newMsg]
     setMessages(updatedMessages)
     setInput('')
 
-    setTimeout(() => {
+    // Simpan riwayat sementara sebelum respon AI
+    const tempHistory = history.map((item: HistoryItem) =>
+      item.id === activeId ? { ...item, messages: updatedMessages } : item
+    )
+    saveHistory(tempHistory)
+
+    // Kirim ke AI
+    try {
+      const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: 'openai/gpt-3.5-turbo',
+          messages: [
+            { role: 'system', content: 'Kamu adalah asisten virtual bernama SkyAiTan.' },
+            ...updatedMessages.map(msg => ({
+              role: msg.sender === 'user' ? 'user' : 'assistant',
+              content: msg.text
+            }))
+          ]
+        })
+      })
+
+      const data = await res.json()
+      const aiText = data.choices?.[0]?.message?.content || 'Maaf, ada kesalahan.'
+
       const aiMsg: Message = {
         sender: 'ai',
-        text: 'Oke, aku sedang memproses...',
+        text: aiText,
         timestamp: new Date().toISOString()
       }
+
       const finalMessages = [...updatedMessages, aiMsg]
       setMessages(finalMessages)
 
@@ -112,7 +142,15 @@ const ChatPage = () => {
         item.id === activeId ? { ...item, messages: finalMessages } : item
       )
       saveHistory(updatedHistory)
-    }, 1000)
+    } catch (err) {
+      const errMsg: Message = {
+        sender: 'ai',
+        text: 'Maaf, tidak dapat terhubung ke AI.',
+        timestamp: new Date().toISOString()
+      }
+      const finalMessages = [...updatedMessages, errMsg]
+      setMessages(finalMessages)
+    }
   }
 
   const handleRename = (id: string) => {

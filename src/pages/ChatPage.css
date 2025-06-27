@@ -1,4 +1,3 @@
-/* Reset & dasar */
 * {
   margin: 0;
   padding: 0;
@@ -9,7 +8,7 @@ html, body, #root {
   height: 100%;
   width: 100%;
   font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(to bottom, #d0e7ff, #f0f8ff); /* biru langit gradasi */
+  background: linear-gradient(to bottom, #d0e7ff, #f0f8ff);
 }
 
 /* Layout utama */

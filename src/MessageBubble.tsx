@@ -1,3 +1,4 @@
+// MessageBubble.tsx
 import './MessageBubble.css'
 
 interface Props {
@@ -7,8 +8,10 @@ interface Props {
 
 const MessageBubble = ({ sender, text }: Props) => {
   return (
-    <div className={`bubble ${sender === 'user' ? 'user' : 'ai'}`}>
-      {text}
+    <div className={`bubble-wrapper ${sender}`}>
+      <div className={`bubble ${sender}`}>
+        {text}
+      </div>
     </div>
   )
 }
