@@ -1,7 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import {
-  FiMenu, FiUser
-} from 'react-icons/fi'
+import { FiMenu, FiUser } from 'react-icons/fi'
 import MessageBubble from '../MessageBubble'
 import Sidebar from '../components/Sidebar'
 import UserPanel from '../components/UserPanel'
@@ -35,7 +33,9 @@ const ChatPage = () => {
   useEffect(() => {
     const saved = localStorage.getItem('skyaitan-all-history')
     if (saved) {
-      const parsed: HistoryItem[] = JSON.parse(saved).filter(item => item.userEmail === email)
+      const parsed: HistoryItem[] = JSON.parse(saved).filter(
+        (item: HistoryItem) => item.userEmail === email
+      )
       setHistory(parsed)
       if (parsed.length > 0) {
         setMessages(parsed[0].messages)
@@ -52,7 +52,7 @@ const ChatPage = () => {
     const allSaved = localStorage.getItem('skyaitan-all-history')
     const parsed: HistoryItem[] = allSaved ? JSON.parse(allSaved) : []
     const updated = [
-      ...parsed.filter(item => item.userEmail !== email),
+      ...parsed.filter((item: HistoryItem) => item.userEmail !== email),
       ...newHistory
     ]
     localStorage.setItem('skyaitan-all-history', JSON.stringify(updated))
@@ -108,7 +108,7 @@ const ChatPage = () => {
       const finalMessages = [...updatedMessages, aiMsg]
       setMessages(finalMessages)
 
-      const updatedHistory = history.map(item =>
+      const updatedHistory = history.map((item: HistoryItem) =>
         item.id === activeId ? { ...item, messages: finalMessages } : item
       )
       saveHistory(updatedHistory)
@@ -119,7 +119,7 @@ const ChatPage = () => {
     const newTitle = prompt('Ganti nama chat:')
     if (!newTitle) return
 
-    const updatedHistory = history.map(item =>
+    const updatedHistory = history.map((item: HistoryItem) =>
       item.id === id ? { ...item, title: newTitle } : item
     )
     saveHistory(updatedHistory)
@@ -127,7 +127,7 @@ const ChatPage = () => {
 
   const handleDelete = (id: string) => {
     if (!confirm('Yakin ingin menghapus chat ini?')) return
-    const updated = history.filter(item => item.id !== id)
+    const updated = history.filter((item: HistoryItem) => item.id !== id)
     saveHistory(updated)
     if (activeId === id && updated.length > 0) {
       setMessages(updated[0].messages)
