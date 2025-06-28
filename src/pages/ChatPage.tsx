@@ -114,14 +114,11 @@ const ChatPage = () => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          model: 'openai/gpt-3.5-turbo',
-          messages: [
-            { role: 'system', content: 'Kamu adalah asisten virtual bernama SkyAiTan.' },
-            ...updatedMessages.map(msg => ({
-              role: msg.sender === 'user' ? 'user' : 'assistant',
-              content: msg.text
-            }))
-          ]
+          model: 'preset/skyaitan',
+          messages: updatedMessages.map(msg => ({
+            role: msg.sender === 'user' ? 'user' : 'assistant',
+            content: msg.text
+          }))
         })
       })
 
