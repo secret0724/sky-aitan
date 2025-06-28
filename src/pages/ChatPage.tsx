@@ -125,7 +125,14 @@ const ChatPage = () => {
       })
 
       const data = await res.json()
-      const aiText = data.choices?.[0]?.message?.content || 'Maaf, ada kesalahan.'
+      console.log('RESPON AI:', data)
+
+      if (data.error) {
+        console.error('ERROR AI:', data.error)
+        throw new Error(data.error.message || 'Gagal respon dari OpenRouter')
+      }
+
+      const aiText = data.choices?.[0]?.message?.content || 'Maaf, AI tidak memberikan balasan.'
 
       const aiMsg: Message = {
         sender: 'ai',
@@ -140,7 +147,8 @@ const ChatPage = () => {
         item.id === activeId ? { ...item, messages: finalMessages } : item
       )
       saveHistory(updatedHistory)
-    } catch (err) {
+    } catch (err: any) {
+      console.error('CATCH ERROR:', err)
       const errMsg: Message = {
         sender: 'ai',
         text: 'Maaf, tidak dapat terhubung ke AI.',
