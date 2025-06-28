@@ -30,6 +30,7 @@ const ChatPage = () => {
   const user = JSON.parse(localStorage.getItem('user') || '{}')
   const email = user.email || 'user@skyaitan.com'
   const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY
+  console.log('API KEY:', apiKey)
 
   useEffect(() => {
     const saved = localStorage.getItem('skyaitan-all-history')
