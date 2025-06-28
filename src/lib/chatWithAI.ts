@@ -8,7 +8,7 @@ export async function chatWithAI(message: string): Promise<string> {
       'X-Title': 'SkyAiTan'
     },
     body: JSON.stringify({
-      model: 'openai/gpt-3.5-turbo', // bisa diganti kayak 'anthropic/claude-3-haiku'
+      model: 'preset/skyaitan', // bisa diganti kayak 'anthropic/claude-3-haiku'
       messages: [
         { role: 'system', content: 'Kamu adalah AI asisten yang ramah.' },
         { role: 'user', content: message }
