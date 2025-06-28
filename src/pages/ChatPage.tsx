@@ -1,3 +1,4 @@
+// ChatPage.tsx
 import { useState, useEffect, useRef } from 'react'
 import { FiMenu, FiUser } from 'react-icons/fi'
 import MessageBubble from '../MessageBubble'
@@ -30,7 +31,7 @@ const ChatPage = () => {
   const user = JSON.parse(localStorage.getItem('user') || '{}')
   const email = user.email || 'user@skyaitan.com'
   const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY
-  console.log('API KEY:', apiKey)
+  const referer = 'https://sky-aitan.vercel.app'
 
   useEffect(() => {
     const saved = localStorage.getItem('skyaitan-all-history')
@@ -111,14 +112,19 @@ const ChatPage = () => {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'HTTP-Referer': referer,
+          'X-Title': 'SkyAiTan'
         },
         body: JSON.stringify({
           model: 'preset/skyaitan',
-          messages: updatedMessages.map(msg => ({
-            role: msg.sender === 'user' ? 'user' : 'assistant',
-            content: msg.text
-          }))
+          messages: [
+            { role: 'system', content: 'Kamu adalah asisten virtual bernama SkyAiTan.' },
+            ...updatedMessages.map(msg => ({
+              role: msg.sender === 'user' ? 'user' : 'assistant',
+              content: msg.text
+            }))
+          ]
         })
       })
 
