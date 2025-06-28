@@ -128,7 +128,7 @@ const ChatPage = () => {
       })
 
       const data = await res.json()
-      console.log('RESPON AI:', data)
+      console.log('API KEY:', apiKey)
 
       if (data.error) {
         console.error('ERROR AI:', data.error)
