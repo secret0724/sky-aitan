@@ -111,11 +111,10 @@ const ChatPage = () => {
       const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json',
-          'HTTP-Referer': referer,
-          'X-Title': 'SkyAiTan'
-        },
+  'Authorization': `Bearer ${apiKey}`,
+  'Content-Type': 'application/json',
+  'X-Title': 'SkyAiTan'
+},
         body: JSON.stringify({
           model: 'preset/sky-ai-tan',
           messages: [
