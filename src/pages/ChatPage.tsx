@@ -15,7 +15,7 @@ interface Message {
 interface HistoryItem {
   id: string
   title: string
-  messages: Message[]
+  messages: Message[]  
   userEmail: string
 }
 
@@ -30,8 +30,6 @@ const ChatPage = () => {
 
   const user = JSON.parse(localStorage.getItem('user') || '{}')
   const email = user.email || 'user@skyaitan.com'
-  const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY
-  const referer = 'https://sky-aitan.vercel.app'
 
   useEffect(() => {
     const saved = localStorage.getItem('skyaitan-all-history')
@@ -108,15 +106,12 @@ const ChatPage = () => {
     saveHistory(tempHistory)
 
     try {
-      const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      const res = await fetch('http://localhost:3001/api/chat', {
         method: 'POST',
         headers: {
-  'Authorization': `Bearer ${apiKey}`,
-  'Content-Type': 'application/json',
-  'X-Title': 'SkyAiTan'
-},
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify({
-          model: 'preset/sky-ai-tan',
           messages: [
             { role: 'system', content: 'Kamu adalah asisten virtual bernama SkyAiTan.' },
             ...updatedMessages.map(msg => ({
@@ -128,7 +123,7 @@ const ChatPage = () => {
       })
 
       const data = await res.json()
-      console.log('API KEY:', apiKey)
+      console.log('RESPON AI:', data)
 
       if (data.error) {
         console.error('ERROR AI:', data.error)
@@ -154,7 +149,7 @@ const ChatPage = () => {
       console.error('CATCH ERROR:', err)
       const errMsg: Message = {
         sender: 'ai',
-        text: 'Maaf, tidak dapat terhubung ke AI.',
+        text: 'Maaf, tidak dapat terhubung ke AI (server offline?).',
         timestamp: new Date().toISOString()
       }
       const finalMessages = [...updatedMessages, errMsg]
