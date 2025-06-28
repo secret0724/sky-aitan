@@ -107,20 +107,20 @@ const ChatPage = () => {
 
     try {
       const res = await fetch('http://localhost:3001/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          messages: [
-            { role: 'system', content: 'Kamu adalah asisten virtual bernama SkyAiTan.' },
-            ...updatedMessages.map(msg => ({
-              role: msg.sender === 'user' ? 'user' : 'assistant',
-              content: msg.text
-            }))
-          ]
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            messages: [
+              { role: 'system', content: 'Kamu adalah asisten virtual bernama SkyAiTan.' },
+              ...updatedMessages.map(msg => ({
+                role: msg.sender === 'user' ? 'user' : 'assistant',
+                content: msg.text
+              }))
+            ]
+          })
         })
-      })
 
       const data = await res.json()
       console.log('RESPON AI:', data)
