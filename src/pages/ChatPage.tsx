@@ -117,7 +117,7 @@ const ChatPage = () => {
           'X-Title': 'SkyAiTan'
         },
         body: JSON.stringify({
-          model: 'preset/skyaitan',
+          model: 'preset/sky-ai-tan',
           messages: [
             { role: 'system', content: 'Kamu adalah asisten virtual bernama SkyAiTan.' },
             ...updatedMessages.map(msg => ({
