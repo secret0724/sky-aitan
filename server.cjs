@@ -4,17 +4,23 @@ const cors = require('cors')
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args))
 
 const app = express()
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 
 app.use(cors())
 app.use(express.json())
 
-if (!process.env.OPENROUTER_API_KEY || !process.env.REFERER) {
-  console.warn('❌ ENV VARS not loaded properly')
+// Log status ENV
+const missing = []
+if (!process.env.OPENROUTER_API_KEY) missing.push('OPENROUTER_API_KEY')
+if (!process.env.REFERER) missing.push('REFERER')
+
+if (missing.length) {
+  console.warn(`❌ Missing ENV variables: ${missing.join(', ')}`)
 } else {
-  console.log('✅ ENV loaded successfully')
+  console.log('✅ All required ENV variables are loaded')
 }
 
+// Endpoint proxy ke OpenRouter
 app.post('/api/chat', async (req, res) => {
   const { messages } = req.body
 
@@ -41,6 +47,7 @@ app.post('/api/chat', async (req, res) => {
   }
 })
 
+// Start server
 app.listen(PORT, () => {
   console.log(`✅ Proxy server running at http://localhost:${PORT}`)
 })
