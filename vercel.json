@@ -1,4 +1,7 @@
 {
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ],
   "version": 2,
   "builds": [
     {
@@ -11,10 +14,6 @@
       "src": "/api/chat",
       "methods": ["POST"],
       "dest": "server.cjs"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
     }
   ]
 }
