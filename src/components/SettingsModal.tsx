@@ -1,6 +1,6 @@
 // components/SettingsModal.tsx
 import './SettingsModal.css'
-import { FiXCircle, FiUser, FiSun, FiMoon } from "react-icons/fi";
+import { FiXCircle, FiUser, FiSun } from "react-icons/fi";
 
 interface SettingsModalProps {
   isOpen: boolean
