@@ -49,5 +49,5 @@ app.post('/api/chat', async (req, res) => {
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`✅ Proxy server running at http://localhost:${PORT}`)
+  console.log(`✅ Proxy server running at https://sky-aitan.vercel.app/api/chat`)
 })
