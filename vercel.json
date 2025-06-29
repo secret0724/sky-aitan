@@ -2,10 +2,11 @@
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ],
+
   "version": 2,
   "builds": [
     {
-      "src": "server.cjs",
+      "src": "chat.js",
       "use": "@vercel/node"
     }
   ],
@@ -13,7 +14,7 @@
     {
       "src": "/api/chat",
       "methods": ["POST"],
-      "dest": "server.cjs"
+      "dest": "chat.js"
     }
   ]
 }
