@@ -4,6 +4,10 @@ import { FiMenu, FiUser } from 'react-icons/fi'
 import MessageBubble from '../MessageBubble'
 import Sidebar from '../components/Sidebar'
 import UserPanel from '../components/UserPanel'
+import AboutModal from '../components/AboutModal'
+import HelpModal from '../components/HelpModal'
+import SettingsModal from '../components/SettingsModal'
+import ProfileModal from '../components/ProfileModal'
 import './ChatPage.css'
 
 interface Message {
@@ -17,11 +21,16 @@ interface HistoryItem {
   title: string
   messages: Message[]
   userEmail: string
+  pinned?: boolean
 }
 
 const ChatPage = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
+  const [aboutOpen, setAboutOpen] = useState(false)
+  const [helpOpen, setHelpOpen] = useState(false)
+  const [settingsOpen, setSettingsOpen] = useState(false)
+  const [profileOpen, setProfileOpen] = useState(false)
   const [input, setInput] = useState('')
   const [messages, setMessages] = useState<Message[]>([])
   const [history, setHistory] = useState<HistoryItem[]>([])
@@ -29,7 +38,7 @@ const ChatPage = () => {
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
 
   const user = JSON.parse(localStorage.getItem('user') || '{}')
-  const email = user.email || 'user@skyaitan.com'
+  const email = user.email || null
 
   useEffect(() => {
     const saved = localStorage.getItem('skyaitan-all-history')
@@ -64,14 +73,14 @@ const ChatPage = () => {
     const newId = Date.now().toString()
     const welcomeMsg: Message = {
       sender: 'ai',
-      text: 'Halo, aku SkyAiTan! Ada yang bisa aku bantu?',
+      text: 'Halo, aku Skyra! Ada yang bisa aku bantu?',
       timestamp: new Date().toISOString()
     }
     const newItem: HistoryItem = {
       id: newId,
       title: 'Chat Baru',
       messages: [welcomeMsg],
-      userEmail: email
+      userEmail: email || 'unknown@skyra.com'
     }
     const updated = [newItem, ...history]
     saveHistory(updated)
@@ -113,7 +122,7 @@ const ChatPage = () => {
         },
         body: JSON.stringify({
           messages: [
-            { role: 'system', content: 'Kamu adalah asisten virtual bernama SkyAiTan.' },
+            { role: 'system', content: 'Kamu adalah asisten virtual bernama Skyra.' },
             ...updatedMessages.map(msg => ({
               role: msg.sender === 'user' ? 'user' : 'assistant',
               content: msg.text
@@ -180,6 +189,18 @@ const ChatPage = () => {
     }
   }
 
+  const handleTogglePin = (id: string) => {
+    const updated = history.map(item =>
+      item.id === id ? { ...item, pinned: !item.pinned } : item
+    )
+    const sorted = [...updated].sort((a, b) => {
+      if (a.pinned && !b.pinned) return -1
+      if (!a.pinned && b.pinned) return 1
+      return 0
+    })
+    saveHistory(sorted)
+  }
+
   const handleLogout = () => {
     localStorage.removeItem('user')
     window.location.href = '/login'
@@ -199,19 +220,52 @@ const ChatPage = () => {
         history={history}
         onRename={handleRename}
         onDelete={handleDelete}
+        onTogglePin={handleTogglePin}
       />
 
       <UserPanel
         isOpen={userMenuOpen}
         onClose={() => setUserMenuOpen(false)}
-        email={email}
+        email={email || ''}
         onLogout={handleLogout}
+        onOpenAbout={() => setAboutOpen(true)}
+        onOpenHelp={() => setHelpOpen(true)}
+        onOpenSettings={() => setSettingsOpen(true)}
+      />
+
+      <AboutModal
+        isOpen={aboutOpen}
+        onClose={() => setAboutOpen(false)}
+      />
+
+      <HelpModal
+        isOpen={helpOpen}
+        onClose={() => setHelpOpen(false)}
+      />
+
+      <SettingsModal
+        isOpen={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        onOpenProfile={() => {
+          setSettingsOpen(false)
+          setProfileOpen(true)
+        }}
+      />
+
+      <ProfileModal
+        isOpen={profileOpen}
+        onClose={() => setProfileOpen(false)}
+        onBack={() => {
+          setProfileOpen(false)
+          setSettingsOpen(true)
+        }}
+        email={email}
       />
 
       <main className="chat-main">
         <header className="chat-header">
           <button className="menu-btn" onClick={() => setSidebarOpen(true)}><FiMenu /></button>
-          <div className="header-title">SkyAiTan</div>
+          <div className="header-title">Skyra</div>
           <button className="user-btn" onClick={() => setUserMenuOpen(true)}><FiUser /></button>
         </header>
 

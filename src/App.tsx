@@ -1,26 +1,26 @@
 // src/App.tsx
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { Routes, Route, useLocation } from 'react-router-dom'
 import ChatPage from './pages/ChatPage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 
 function App() {
   const location = useLocation()
-  const isAuthenticated = !!localStorage.getItem('user')
 
   return (
     <Routes key={location.pathname}>
-      <Route
-        path="/"
-        element={<Navigate to={isAuthenticated ? '/chat' : '/login'} />}
-      />
+      {/* Root langsung ke ChatPage, login atau nggak */}
+      <Route path="/" element={<ChatPage />} />
+      
+      {/* Bisa tetep akses login & register manual */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
-      <Route
-        path="/chat"
-        element={isAuthenticated ? <ChatPage /> : <Navigate to="/login" />}
-      />
-      <Route path="*" element={<Navigate to="/" />} />
+
+      {/* /chat juga tetep boleh, alias alias dari / */}
+      <Route path="/chat" element={<ChatPage />} />
+
+      {/* Fallback kalau URL ngawur */}
+      <Route path="*" element={<ChatPage />} />
     </Routes>
   )
 }

@@ -1,15 +1,17 @@
+/* Sidebar.css */
 .sidebar {
   position: fixed;
   top: 0;
-  left: -260px;
-  width: 260px;
+  left: -270px;
+  width: 270px;
   height: 100vh;
-  background-color: #f9f9ff;
-  box-shadow: 2px 0 6px rgba(0, 0, 0, 0.1);
+  background-color: #e11212;
+  box-shadow: 2px 0 10px rgba(0, 123, 255, 0.1);
   padding: 20px;
   overflow-y: auto;
   transition: left 0.3s ease;
   z-index: 1000;
+  border-right: 1px solid #e0e0e0;
 }
 
 .sidebar.open {
@@ -17,18 +19,17 @@
 }
 
 .sidebar-header {
+  gap: 115px;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  margin-bottom: 20px;
-  gap: 120px;
-  position: relative;
+  justify-content: space-between;
+  margin-bottom: 10px;
 }
 
 .sidebar-header h2 {
   font-size: 20px;
   color: #007bff;
-  flex-grow: 1;
+  margin: 0;
 }
 
 .close-btn {
@@ -36,7 +37,7 @@
   border: none;
   font-size: 22px;
   cursor: pointer;
-  color: #333;
+  color: #007bff;
 }
 
 .sidebar button {
@@ -45,7 +46,7 @@
   gap: 10px;
   background-color: transparent;
   border: none;
-  color: #333;
+  color: #333333;
   font-size: 15px;
   padding: 10px 0;
   width: 100%;
@@ -55,21 +56,41 @@
 }
 
 .sidebar button:hover {
-  background-color: #e6f0ff;
-  border-radius: 8px;
+  background-color: #f0f8ff;
+  border-radius: 6px;
+}
+
+.search-box {
+  position: relative;
+  margin: 1px 0;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 8px 12px 8px 32px;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.search-icon {
+  position: absolute;
+  top: 50%;
+  left: 8px;
+  transform: translateY(-50%);
+  color: #777;
 }
 
 .history-section {
-  margin-top: 2px;
+  margin-top: 10px;
 }
 
 .history-section > button {
   font-weight: bold;
-  margin-bottom: 10px;
-  width: 100%;
   display: flex;
   align-items: center;
   gap: 8px;
+  margin-bottom: 10px;
 }
 
 .history-list {
@@ -80,12 +101,10 @@
 
 .history-item {
   position: relative;
-  font-size: 14px;
-  color: #444;
+  padding: 4px 0;
   border-left: 2px solid transparent;
   border-radius: 6px;
   transition: background 0.2s;
-  padding: 4px 0;
 }
 
 .history-item:hover {
@@ -97,28 +116,48 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
-  gap: 6px;
+  gap: 8px;
 }
 
 .history-title span {
+  flex-grow: 1;
+  overflow: hidden;
   white-space: nowrap;
-  padding-right: 140px;
+  text-overflow: ellipsis;
   cursor: pointer;
+  padding-right: 8px;
+}
+
+.action-icons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.pin-icon {
+  cursor: pointer;
+  color: #ccc;
+  transition: color 0.2s;
+}
+
+.pin-icon.pinned {
+  color: #ffcc00;
 }
 
 .menu-icon {
-  justify-content: right;
+  background: none;
+  border: none;
   cursor: pointer;
-  z-index: 2;
+  font-size: 16px;
+  color: #666;
 }
-
 
 .floating-menu {
   position: absolute;
   right: 0;
   top: 100%;
-  margin-top: 10px;
+  margin-top: 8px;
   width: 150px;
   background: white;
   border: 1px solid #ddd;
