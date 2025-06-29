@@ -5,9 +5,9 @@ module.exports = async (req, res) => {
     return res.status(405).send('Method Not Allowed')
   }
 
-  const messages = req.body.messages
-
   try {
+    const messages = req.body.messages
+
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
