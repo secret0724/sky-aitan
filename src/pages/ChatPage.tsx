@@ -106,7 +106,7 @@ const ChatPage = () => {
     saveHistory(tempHistory)
 
     try {
-      const res = await fetch('/api/chat', {
+      const res = await fetch('https://sky-aitan.vercel.app', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
