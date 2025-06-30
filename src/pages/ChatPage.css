@@ -390,12 +390,12 @@ html, body, #root {
   resize: none;
   border: none;
   border-radius: 12px;
-  padding: 16px 20px;
+  padding: 5px 5px;
   font-size: 16px;
   background: white;
   color: #111;
   outline: none;
-  min-height: 80px;
+  min-height: 50px;
   box-shadow: none;
 }
 
@@ -408,7 +408,8 @@ html, body, #root {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  gap: 10px;
+  gap: 1px;
+  height: 20px;
 }
 
 .icon-btn {
