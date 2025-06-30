@@ -265,8 +265,23 @@ const ChatPage = () => {
       <main className="chat-main">
         <header className="chat-header">
           <button className="menu-btn" onClick={() => setSidebarOpen(true)}><FiMenu /></button>
-          <div className="header-title">Skyra</div>
-          <button className="user-btn" onClick={() => setUserMenuOpen(true)}><FiUser /></button>
+          <div className="sidebar-header">
+    <img
+      src="/logo/Skyra-N1.png"
+      alt="Skyra Logo"
+      style={{
+        height: '30px'
+      }}
+    />
+  </div>
+          <button className="user-btn" onClick={() => setUserMenuOpen(true)}><img
+      src="/logo/Skyra-L1.png"
+      alt="Skyra Logo"
+      style={{
+        height: '30px'
+      }}
+    />
+  </button>
         </header>
 
         <div className="chat-messages">

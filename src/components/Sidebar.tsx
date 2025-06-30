@@ -60,10 +60,16 @@ const Sidebar = ({
 
   return (
     <aside ref={sidebarRef} className={`sidebar ${isOpen ? 'open' : ''}`}>
-      <div className="sidebar-header">
-        <h2>Skyra</h2>
-        <button onClick={onClose} className="close-btn"><FiXCircle /></button>
-      </div>
+  <div className="sidebar-header">
+    <img
+      src="/logo/Skyra-N1.png"
+      alt="Skyra Logo"
+      style={{
+        height: '30px'
+      }}
+    />
+  </div>
+
 
       <div className="search-box">
         <FiSearch className="search-icon" />
