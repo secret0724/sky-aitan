@@ -3,7 +3,7 @@ import './Auth.css'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { loginUser } from '../lib/auth'
-import { GoogleLogin, CredentialResponse } from '@react-oauth/google'
+import { useGoogleLogin } from '@react-oauth/google'
 import { jwtDecode } from 'jwt-decode'
 import { FiMail, FiLock } from 'react-icons/fi'
 
@@ -30,19 +30,31 @@ const LoginPage = () => {
     }
   }
 
-  const handleGoogleSuccess = (credentialResponse: CredentialResponse) => {
-    if (!credentialResponse.credential) return alert('Token Google tidak ditemukan')
-    const decoded: GoogleJwt = jwtDecode(credentialResponse.credential)
-    const user = {
-      email: decoded.email,
-      name: decoded.name,
-      avatar: decoded.picture,
-      google: true,
+  const loginWithGoogle = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+    try {
+      const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+        headers: {
+          Authorization: `Bearer ${tokenResponse.access_token}`,
+        },
+      })
+      const data = await res.json()
+      const user = {
+        email: data.email,
+        name: data.name,
+        avatar: data.picture,
+        google: true,
+      }
+      localStorage.setItem('user', JSON.stringify(user))
+      alert('Login dengan Google berhasil!')
+      navigate('/chat')
+    } catch (err) {
+      alert('Gagal mengambil data akun Google')
     }
-    localStorage.setItem('user', JSON.stringify(user))
-    alert('Login dengan Google berhasil!')
-    navigate('/chat')
-  }
+  },
+    onError: () => alert('Login Google gagal'),
+    flow: 'implicit',
+  })
 
   return (
     <div className="auth-container">
@@ -79,10 +91,10 @@ const LoginPage = () => {
 
         <div className="divider"><span>atau</span></div>
 
-        <GoogleLogin
-          onSuccess={handleGoogleSuccess}
-          onError={() => alert('Login Google gagal')}
-        />
+        <button type="button" className="google-btn" onClick={() => loginWithGoogle()}>
+          <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" />
+          <span>Lanjut dengan Google</span>
+        </button>
 
         <p className="register-link">
           Belum punya akun? <Link to="/register">Daftar</Link>
