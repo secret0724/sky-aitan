@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { loginUser } from '../lib/auth'
 import { GoogleLogin, CredentialResponse } from '@react-oauth/google'
 import { jwtDecode } from 'jwt-decode'
+import { FiMail, FiLock } from 'react-icons/fi'
 
 interface GoogleJwt {
   email: string
@@ -30,11 +31,7 @@ const LoginPage = () => {
   }
 
   const handleGoogleSuccess = (credentialResponse: CredentialResponse) => {
-    if (!credentialResponse.credential) {
-      alert('Token Google tidak ditemukan')
-      return
-    }
-
+    if (!credentialResponse.credential) return alert('Token Google tidak ditemukan')
     const decoded: GoogleJwt = jwtDecode(credentialResponse.credential)
     const user = {
       email: decoded.email,
@@ -50,32 +47,44 @@ const LoginPage = () => {
   return (
     <div className="auth-container">
       <form className="auth-card" onSubmit={handleLogin}>
-        <h2>Login</h2>
+        <div className="auth-header">
+          <img src="/logo/Skyra-L1.png" alt="Logo Skyra" className="auth-logo" />
+          <h2>Selamat Datang</h2>
+          <p>Masuk untuk mulai ngobrol dengan <strong>Skyra</strong></p>
+        </div>
 
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          required
-        />
-        <button type="submit">Masuk</button>
-
-        <div style={{ margin: '12px 0' }}>
-          <GoogleLogin
-            onSuccess={handleGoogleSuccess}
-            onError={() => alert('Login Google gagal')}
+        <div className="input-group">
+          <FiMail className="input-icon" />
+          <input
+            type="email"
+            placeholder="Alamat Email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            required
           />
         </div>
 
-        <p>
+        <div className="input-group">
+          <FiLock className="input-icon" />
+          <input
+            type="password"
+            placeholder="Kata Sandi"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            required
+          />
+        </div>
+
+        <button type="submit">Masuk</button>
+
+        <div className="divider"><span>atau</span></div>
+
+        <GoogleLogin
+          onSuccess={handleGoogleSuccess}
+          onError={() => alert('Login Google gagal')}
+        />
+
+        <p className="register-link">
           Belum punya akun? <Link to="/register">Daftar</Link>
         </p>
       </form>

@@ -1,7 +1,9 @@
+// RegisterPage.tsx
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import './Auth.css'
 import { registerUser } from '../lib/auth'
+import { FiMail, FiLock } from 'react-icons/fi'
 
 const RegisterPage = () => {
   const [email, setEmail] = useState('')
@@ -11,7 +13,6 @@ const RegisterPage = () => {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
-
     if (password !== confirmPassword) {
       alert('Password dan konfirmasi tidak cocok!')
       return
@@ -29,31 +30,49 @@ const RegisterPage = () => {
   return (
     <div className="auth-container">
       <form className="auth-card" onSubmit={handleRegister}>
-        <h2>Daftar</h2>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Konfirmasi Password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          required
-        />
+        <div className="auth-header">
+          <img src="/logo/Skyra-L1.png" alt="Logo SkyAiTan" className="auth-logo" />
+          <h2>Buat Akun Baru</h2>
+          <p>Daftar untuk mulai ngobrol dengan <strong>Skyra</strong></p>
+        </div>
+
+        <div className="input-group">
+          <FiMail className="input-icon" />
+          <input
+            type="email"
+            placeholder="Alamat Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="input-group">
+          <FiLock className="input-icon" />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="input-group">
+          <FiLock className="input-icon" />
+          <input
+            type="password"
+            placeholder="Konfirmasi Password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+          />
+        </div>
+
         <button type="submit">Daftar</button>
-        <p>
-          Sudah punya akun? <a href="/login">Masuk</a>
+
+        <p className="register-link">
+          Sudah punya akun? <Link to="/login">Masuk</Link>
         </p>
       </form>
     </div>
