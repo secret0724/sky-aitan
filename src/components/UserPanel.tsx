@@ -57,9 +57,9 @@ const UserPanel = ({ isOpen, onClose, email, onLogout, onOpenAbout, onOpenHelp, 
         </div>
 
         <hr />
-        <button onClick={onOpenSettings}><FiSettings /> Pengaturan</button>
-        <button onClick={onOpenAbout}><FiInfo /> Tentang Skyra</button>
-        <button onClick={onOpenHelp}><FiHelpCircle /> Bantuan</button>
+        <button onClick={onOpenSettings}><FiSettings /> Setting</button>
+        <button onClick={onOpenAbout}><FiInfo /> About Skyra</button>
+        <button onClick={onOpenHelp}><FiHelpCircle /> Help</button>
         {isLoggedIn && (
           <button onClick={onLogout}><FiLogOut /> Logout</button>
         )}

@@ -2,7 +2,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { FiMenu } from 'react-icons/fi'
 import { IoIosMic } from 'react-icons/io'
-import { FaPaperPlane, FaPlus, FaUpload } from 'react-icons/fa'
+import { IoSend } from 'react-icons/io5'
+import {  FaPlus, FaUpload } from 'react-icons/fa'
 import MessageBubble from '../MessageBubble'
 import Sidebar from '../components/Sidebar'
 import UserPanel from '../components/UserPanel'
@@ -280,7 +281,10 @@ const ChatPage = () => {
       <button className="icon-btn"><FaPlus /></button>
       <button className="icon-btn"><FaUpload /></button>
       <button className="icon-btn"><IoIosMic /></button>
-      <button className="send-btn" onClick={handleSend}><FaPaperPlane /></button>
+      <button className="send-btn" onClick={handleSend}>
+  <IoSend />
+</button>
+
     </div>
   </div>
 </div>
