@@ -4,14 +4,8 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { loginUser } from '../lib/auth'
 import { useGoogleLogin } from '@react-oauth/google'
-import { jwtDecode } from 'jwt-decode'
 import { FiMail, FiLock } from 'react-icons/fi'
 
-interface GoogleJwt {
-  email: string
-  name: string
-  picture: string
-}
 
 const LoginPage = () => {
   const [email, setEmail] = useState('')
