@@ -3,7 +3,8 @@ import { useState, useEffect, useRef } from 'react'
 import { FiMenu } from 'react-icons/fi'
 import { IoIosMic } from 'react-icons/io'
 import { IoSend } from 'react-icons/io5'
-import {  FaPlus, FaUpload } from 'react-icons/fa'
+import { FaPlus, FaUpload } from 'react-icons/fa'
+import axios from 'axios'
 import MessageBubble from '../MessageBubble'
 import Sidebar from '../components/Sidebar'
 import UserPanel from '../components/UserPanel'
@@ -79,6 +80,25 @@ const ChatPage = () => {
     ]
     localStorage.setItem('skyaitan-all-history', JSON.stringify(updated))
     setHistory(newHistory)
+  }
+
+  const generateTitle = async (messages: Message[]) => {
+    const prompt = `Ringkas percakapan ini dalam 3-5 kata untuk dijadikan judul:\n${messages.map(m => `${m.sender === 'user' ? 'User' : 'AI'}: ${m.text}`).join('\n')}`
+
+    try {
+      const res = await axios.post('/api/chat', {
+        messages: [
+          { role: 'system', content: 'Buat ringkasan singkat dalam 3-5 kata untuk dijadikan judul chat.' },
+          { role: 'user', content: prompt }
+        ]
+      })
+
+      const title = res.data.choices?.[0]?.message?.content?.trim()
+      return title || 'Chat Baru'
+    } catch (err) {
+      console.error('Gagal buat judul:', err)
+      return 'Chat Baru'
+    }
   }
 
   const handleNewChat = () => {
@@ -160,9 +180,19 @@ const ChatPage = () => {
       setMessages(finalMessages)
       setIsAITyping(false)
 
-      const updatedHistory = history.map(item =>
+      let updatedHistory = history.map(item =>
         item.id === activeId ? { ...item, messages: finalMessages } : item
       )
+
+      // Generate title jika baru pertama kali user ngetik
+      const activeItem = history.find(h => h.id === activeId)
+      if (activeItem && activeItem.title === 'Chat Baru') {
+        const newTitle = await generateTitle(finalMessages)
+        updatedHistory = updatedHistory.map(item =>
+          item.id === activeId ? { ...item, title: newTitle } : item
+        )
+      }
+
       saveHistory(updatedHistory)
     } catch (err: any) {
       console.error('CATCH ERROR:', err)
@@ -267,28 +297,24 @@ const ChatPage = () => {
         </div>
 
         <div className="chat-input-container">
-  <div className="chat-input-inner">
-    <textarea
-      ref={textareaRef}
-      placeholder="Message Skyra"
-      value={input}
-      onChange={e => setInput(e.target.value)}
-      onKeyDown={handleKeyDown}
-      className="floating-input"
-      rows={1}
-    />
-    <div className="button-row">
-      <button className="icon-btn"><FaPlus /></button>
-      <button className="icon-btn"><FaUpload /></button>
-      <button className="icon-btn"><IoIosMic /></button>
-      <button className="send-btn" onClick={handleSend}>
-  <IoSend />
-</button>
-
-    </div>
-  </div>
-</div>
-
+          <div className="chat-input-inner">
+            <textarea
+              ref={textareaRef}
+              placeholder="Message Skyra"
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              className="floating-input"
+              rows={1}
+            />
+            <div className="button-row">
+              <button className="icon-btn"><FaPlus /></button>
+              <button className="icon-btn"><FaUpload /></button>
+              <button className="icon-btn"><IoIosMic /></button>
+              <button className="send-btn" onClick={handleSend}><IoSend /></button>
+            </div>
+          </div>
+        </div>
       </main>
     </div>
   )

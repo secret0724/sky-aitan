@@ -10,7 +10,6 @@ import {
 import './Sidebar.css'
 import { TbMessagePlus } from 'react-icons/tb'
 
-
 interface SidebarProps {
   isOpen: boolean
   onClose: () => void
@@ -38,7 +37,6 @@ const Sidebar = ({
   const sidebarRef = useRef<HTMLDivElement>(null)
   const menuRef = useRef<HTMLDivElement>(null)
 
-  // ✅ Tutup sidebar kalo klik di luar
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
       const target = e.target as Node
@@ -59,16 +57,13 @@ const Sidebar = ({
 
   return (
     <aside ref={sidebarRef} className={`sidebar ${isOpen ? 'open' : ''}`}>
-  <div className="sidebar-header">
-    <img
-      src="/logo/Skyra-N1.png"
-      alt="Skyra Logo"
-      style={{
-        height: '30px'
-      }}
-    />
-  </div>
-
+      <div className="sidebar-header">
+        <img
+          src="/logo/Skyra-N1.png"
+          alt="Skyra Logo"
+          style={{ height: '30px' }}
+        />
+      </div>
 
       <div className="search-box">
         <FiSearch className="search-icon" />

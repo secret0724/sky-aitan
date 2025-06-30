@@ -1,21 +1,31 @@
-export async function chatWithAI(message: string): Promise<string> {
-  const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': 'Bearer ' + import.meta.env.VITE_OPENROUTER_API_KEY,
-      'Content-Type': 'application/json',
-      'HTTP-Referer': 'https://sky-aitan.vercel.app', // ganti sesuai domain lu
-      'X-Title': 'SkyAiTan'
-    },
-    body: JSON.stringify({
-      model: 'preset/skyaitan', // bisa diganti kayak 'anthropic/claude-3-haiku'
-      messages: [
-        { role: 'system', content: 'Kamu adalah AI asisten yang ramah.' },
-        { role: 'user', content: message }
-      ]
-    })
-  })
+// summaryTitle.ts
+import axios from 'axios'
 
-  const data = await res.json()
-  return data.choices?.[0]?.message?.content || 'Gagal mendapatkan balasan.'
+export const generateTitle = async (message: string) => {
+  const res = await axios.post(
+    'https://openrouter.ai/api/v1/chat/completions',
+    {
+      model: 'mistralai/mixtral-8x7b',
+      messages: [
+        {
+          role: 'system',
+          content: 'Buat judul singkat yang cocok untuk merangkum isi pesan user. Maksimal 4 kata. Jangan pakai tanda kutip atau kata "judul:".'
+        },
+        {
+          role: 'user',
+          content: message
+        }
+      ],
+      max_tokens: 20,
+      temperature: 0.7,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`,
+        'Content-Type': 'application/json',
+      }
+    }
+  )
+
+  return res.data.choices[0].message.content.trim()
 }
