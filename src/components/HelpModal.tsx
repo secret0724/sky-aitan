@@ -16,7 +16,7 @@ const HelpModal = ({ isOpen, onClose }: HelpModalProps) => {
     <button className="close-btn" onClick={onClose}>
       <FiXCircle />
     </button>
-    <h2>Bantuan</h2>
+    <h2>Help</h2>
     <p>Berikut beberapa panduan penggunaan Skyra:</p>
     <ul className="help-list">
       <li>

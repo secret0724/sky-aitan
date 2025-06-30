@@ -17,7 +17,7 @@ const SettingsModal = ({ isOpen, onClose, onOpenProfile }: SettingsModalProps) =
     <button className="close-btn" onClick={onClose}>
       <FiXCircle />
     </button>
-    <h2>Pengaturan</h2>
+    <h2>Setting</h2>
 
     {/* Info Akun */}
     <div className="settings-section">
