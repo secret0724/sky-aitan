@@ -1,6 +1,8 @@
 // ChatPage.tsx
 import { useState, useEffect, useRef } from 'react'
 import { FiMenu } from 'react-icons/fi'
+import { IoIosMic } from 'react-icons/io'
+import { FaPaperPlane, FaPlus, FaUpload } from 'react-icons/fa'
 import MessageBubble from '../MessageBubble'
 import Sidebar from '../components/Sidebar'
 import UserPanel from '../components/UserPanel'
@@ -35,7 +37,9 @@ const ChatPage = () => {
   const [messages, setMessages] = useState<Message[]>([])
   const [history, setHistory] = useState<HistoryItem[]>([])
   const [activeId, setActiveId] = useState<string | null>(null)
+  const [isAITyping, setIsAITyping] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null)
 
   const user = JSON.parse(localStorage.getItem('user') || '{}')
   const email = user.email || null
@@ -57,6 +61,13 @@ const ChatPage = () => {
       handleNewChat()
     }
   }, [email])
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto'
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`
+    }
+  }, [input])
 
   const saveHistory = (newHistory: HistoryItem[]) => {
     const allSaved = localStorage.getItem('skyaitan-all-history')
@@ -108,6 +119,7 @@ const ChatPage = () => {
     const updatedMessages = [...messages, newMsg]
     setMessages(updatedMessages)
     setInput('')
+    setIsAITyping(true)
 
     const tempHistory = history.map(item =>
       item.id === activeId ? { ...item, messages: updatedMessages } : item
@@ -134,15 +146,9 @@ const ChatPage = () => {
       if (!res.ok) throw new Error(`Server error: ${res.status}`)
 
       const data = await res.json()
-      console.log('RESPON AI:', data)
-
-      if (data.error) {
-        console.error('ERROR AI:', data.error)
-        throw new Error(data.error.message || 'Gagal respon dari OpenRouter')
-      }
+      if (data.error) throw new Error(data.error.message || 'Gagal respon dari OpenRouter')
 
       const aiText = data.choices?.[0]?.message?.content || 'Maaf, AI tidak memberikan balasan.'
-
       const aiMsg: Message = {
         sender: 'ai',
         text: aiText,
@@ -151,6 +157,7 @@ const ChatPage = () => {
 
       const finalMessages = [...updatedMessages, aiMsg]
       setMessages(finalMessages)
+      setIsAITyping(false)
 
       const updatedHistory = history.map(item =>
         item.id === activeId ? { ...item, messages: finalMessages } : item
@@ -165,6 +172,7 @@ const ChatPage = () => {
       }
       const finalMessages = [...updatedMessages, errMsg]
       setMessages(finalMessages)
+      setIsAITyping(false)
     }
   }
 
@@ -210,97 +218,73 @@ const ChatPage = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      handleSend()
+    }
+  }
+
   return (
     <div className={`chat-layout ${sidebarOpen ? 'sidebar-open' : ''} ${userMenuOpen ? 'user-open' : ''}`}>
-      <Sidebar
-        isOpen={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-        onNewChat={handleNewChat}
-        onSelectHistory={handleSelectHistory}
-        history={history}
-        onRename={handleRename}
-        onDelete={handleDelete}
-        onTogglePin={handleTogglePin}
-      />
-
-      <UserPanel
-        isOpen={userMenuOpen}
-        onClose={() => setUserMenuOpen(false)}
-        email={email || ''}
-        onLogout={handleLogout}
-        onOpenAbout={() => setAboutOpen(true)}
-        onOpenHelp={() => setHelpOpen(true)}
-        onOpenSettings={() => setSettingsOpen(true)}
-      />
-
-      <AboutModal
-        isOpen={aboutOpen}
-        onClose={() => setAboutOpen(false)}
-      />
-
-      <HelpModal
-        isOpen={helpOpen}
-        onClose={() => setHelpOpen(false)}
-      />
-
-      <SettingsModal
-        isOpen={settingsOpen}
-        onClose={() => setSettingsOpen(false)}
-        onOpenProfile={() => {
-          setSettingsOpen(false)
-          setProfileOpen(true)
-        }}
-      />
-
-      <ProfileModal
-        isOpen={profileOpen}
-        onClose={() => setProfileOpen(false)}
-        onBack={() => {
-          setProfileOpen(false)
-          setSettingsOpen(true)
-        }}
-        email={email}
-      />
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} onNewChat={handleNewChat} onSelectHistory={handleSelectHistory} history={history} onRename={handleRename} onDelete={handleDelete} onTogglePin={handleTogglePin} />
+      <UserPanel isOpen={userMenuOpen} onClose={() => setUserMenuOpen(false)} email={email || ''} onLogout={handleLogout} onOpenAbout={() => setAboutOpen(true)} onOpenHelp={() => setHelpOpen(true)} onOpenSettings={() => setSettingsOpen(true)} />
+      <AboutModal isOpen={aboutOpen} onClose={() => setAboutOpen(false)} />
+      <HelpModal isOpen={helpOpen} onClose={() => setHelpOpen(false)} />
+      <SettingsModal isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} onOpenProfile={() => { setSettingsOpen(false); setProfileOpen(true) }} />
+      <ProfileModal isOpen={profileOpen} onClose={() => setProfileOpen(false)} onBack={() => { setProfileOpen(false); setSettingsOpen(true) }} email={email} />
 
       <main className="chat-main">
         <header className="chat-header">
           <button className="menu-btn" onClick={() => setSidebarOpen(true)}><FiMenu /></button>
           <div className="sidebar-header">
-    <img
-      src="/logo/Skyra-N1.png"
-      alt="Skyra Logo"
-      style={{
-        height: '30px'
-      }}
-    />
-  </div>
-          <button className="user-btn" onClick={() => setUserMenuOpen(true)}><img
-      src="/logo/Skyra-L1.png"
-      alt="Skyra Logo"
-      style={{
-        height: '30px'
-      }}
-    />
-  </button>
+            <img src="/logo/Skyra-N1.png" alt="Skyra Logo" style={{ height: '30px' }} />
+          </div>
+          <button className="user-btn" onClick={() => setUserMenuOpen(true)}>
+            <img src="/logo/Skyra-L1.png" alt="Skyra Logo" style={{ height: '35px' }} />
+          </button>
         </header>
 
         <div className="chat-messages">
-          {messages.map((msg, idx) => (
-            <MessageBubble key={idx} sender={msg.sender} text={msg.text} />
-          ))}
+          {messages.length === 1 && messages[0].sender === 'ai' && messages[0].text.includes('Skyra') ? (
+            <div className="welcome-screen">
+              <img src="/logo/Skyra-L1.png" alt="Skyra Logo" style={{ height: '80px' }} />
+              <h1>Hi, I'm Skyra.</h1>
+              <p>How can I help you today?</p>
+            </div>
+          ) : (
+            <>
+              {messages.map((msg, idx) => (
+                <MessageBubble key={idx} sender={msg.sender} text={msg.text} />
+              ))}
+              {isAITyping && (
+                <div className="typing-indicator"><span></span><span></span><span></span></div>
+              )}
+            </>
+          )}
           <div ref={messagesEndRef} />
         </div>
 
-        <div className="chat-input">
-          <input
-            type="text"
-            placeholder="Tulis pesan..."
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleSend()}
-          />
-          <button onClick={handleSend}>Kirim</button>
-        </div>
+        <div className="chat-input-container">
+  <div className="chat-input-inner">
+    <textarea
+      ref={textareaRef}
+      placeholder="Message Skyra"
+      value={input}
+      onChange={e => setInput(e.target.value)}
+      onKeyDown={handleKeyDown}
+      className="floating-input"
+      rows={1}
+    />
+    <div className="button-row">
+      <button className="icon-btn"><FaPlus /></button>
+      <button className="icon-btn"><FaUpload /></button>
+      <button className="icon-btn"><IoIosMic /></button>
+      <button className="send-btn" onClick={handleSend}><FaPaperPlane /></button>
+    </div>
+  </div>
+</div>
+
       </main>
     </div>
   )

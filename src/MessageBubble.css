@@ -2,7 +2,7 @@
 
 .bubble-wrapper {
   display: flex;
-  padding: 4px 12px;
+  padding: 6px 16px;
 }
 
 .bubble-wrapper.user {
@@ -15,22 +15,60 @@
 
 .bubble {
   max-width: 80%;
-  padding: 10px 14px;
+  padding: 14px 16px;
   border-radius: 18px;
-  line-height: 1.5;
-  font-size: 14px;
+  line-height: 1.6;
+  font-size: 15px;
   white-space: pre-wrap;
   word-wrap: break-word;
+  position: relative;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: background 0.2s ease;
 }
 
 .bubble.user {
-  background-color: #cce4ff;
-  color: #000;
-  border-top-right-radius: 0;
+  background-color: #1d8fe0;
+  color: #fff;
+  border-top-right-radius: 4px;
 }
 
 .bubble.ai {
   background-color: #f2f2f2;
   color: #333;
-  border-top-left-radius: 0;
+  border-top-left-radius: 4px;
+}
+
+.bubble-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  justify-content: flex-end;
+}
+
+.action-btn {
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.action-btn:hover {
+  color: #1d8fe0;
+  transform: scale(1.1);
+}
+
+.edit-input {
+  width: 100%;
+  font-size: 15px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  resize: vertical;
+  background: #fff;
+  color: #111;
+  outline: none;
+  margin-bottom: 6px;
 }
