@@ -1,7 +1,6 @@
-// MessageBubble.tsx
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { FiEdit2, FiCopy, FiCheck } from 'react-icons/fi'
+import { FiCopy, FiCheck } from 'react-icons/fi'
 import './MessageBubble.css'
 
 interface Props {
@@ -10,21 +9,12 @@ interface Props {
 }
 
 const MessageBubble = ({ sender, text }: Props) => {
-  const [isEditing, setIsEditing] = useState(false)
-  const [editedText, setEditedText] = useState(text)
   const [copied, setCopied] = useState(false)
 
   const handleCopy = () => {
     navigator.clipboard.writeText(text)
     setCopied(true)
     setTimeout(() => setCopied(false), 1500)
-  }
-
-  const handleEditToggle = () => {
-    if (isEditing) {
-      setEditedText(editedText.trim() || text)
-    }
-    setIsEditing(!isEditing)
   }
 
   return (
@@ -35,24 +25,12 @@ const MessageBubble = ({ sender, text }: Props) => {
       className={`bubble-wrapper ${sender}`}
     >
       <div className={`bubble ${sender}`}>
-        {isEditing ? (
-          <textarea
-            className="edit-input"
-            value={editedText}
-            onChange={(e) => setEditedText(e.target.value)}
-          />
-        ) : (
-          <span>{editedText}</span>
-        )}
-
         <div className="bubble-actions">
-          <button onClick={handleEditToggle} className="action-btn" title="Edit">
-            <FiEdit2 />
-          </button>
           <button onClick={handleCopy} className="action-btn" title="Copy">
             {copied ? <FiCheck /> : <FiCopy />}
           </button>
         </div>
+        <span>{text}</span>
       </div>
     </motion.div>
   )
