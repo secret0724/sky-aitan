@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import {
-  FiXCircle,
   FiMessageCircle,
   FiMoreVertical,
   FiEdit2,

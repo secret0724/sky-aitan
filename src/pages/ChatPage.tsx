@@ -1,6 +1,6 @@
 // ChatPage.tsx
 import { useState, useEffect, useRef } from 'react'
-import { FiMenu, FiUser } from 'react-icons/fi'
+import { FiMenu } from 'react-icons/fi'
 import MessageBubble from '../MessageBubble'
 import Sidebar from '../components/Sidebar'
 import UserPanel from '../components/UserPanel'
