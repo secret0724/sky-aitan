@@ -62,3 +62,17 @@
 .auth-card a:hover {
   text-decoration: underline;
 }
+
+.google-btn {
+  background: white;
+  color: #444;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 6px;
+  margin-top: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.google-btn:hover {
+  background: #f2f2f2;
+}
