@@ -330,7 +330,7 @@ const handleSendImage = async () => {
   const newMsg: Message = {
     sender: 'user',
     text: imageCaption,
-    image: previewImage, // kirim gambarnya
+    image: previewImage,
     timestamp: new Date().toISOString()
   }
 
@@ -340,7 +340,6 @@ const handleSendImage = async () => {
   setImageCaption('')
   setIsSendingImage(true)
 
-  // Kirim ke AI
   try {
     const res = await fetch('/api/vision', {
       method: 'POST',
@@ -351,7 +350,14 @@ const handleSendImage = async () => {
       })
     })
 
-    const data = await res.json()
+    const text = await res.text()
+    let data
+    try {
+      data = JSON.parse(text)
+    } catch (e) {
+      throw new Error(text)
+    }
+
     const aiMsg: Message = {
       sender: 'ai',
       text: data.result || 'Maaf, tidak ada hasil analisis.',
@@ -366,11 +372,11 @@ const handleSendImage = async () => {
       item.id === activeId ? { ...item, messages: finalMessages } : item
     )
     saveHistory(updatedHistory)
-  } catch (err) {
+  } catch (err: any) {
     console.error('Vision error:', err)
     const errorMsg: Message = {
       sender: 'ai',
-      text: 'Gagal menganalisis gambar.',
+      text: err?.message || 'Gagal menganalisis gambar.',
       timestamp: new Date().toISOString()
     }
     setMessages([...updatedMessages, errorMsg])

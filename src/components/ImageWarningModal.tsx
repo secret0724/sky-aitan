@@ -17,7 +17,7 @@ const ImageWarningModal = ({ isOpen, onClose, onOpenSettings }: ImageWarningModa
       <div className="warning-modal" onClick={e => e.stopPropagation()}>
         <button className="warning-close" onClick={onClose}><FiX /></button>
         <div className="warning-icon">
-          <MdWarningAmber size={64} color="#f39c12" />
+          <MdWarningAmber size={64} color="red" />
         </div>
         <p className="warning-text">
           Anda sedang dalam <strong>mode Skyra Chat</strong>, silakan ubah mode menjadi <strong>Skyra Analisis Gambar</strong> di pengaturan.

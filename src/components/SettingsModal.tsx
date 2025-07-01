@@ -38,7 +38,7 @@ const SettingsModal = ({
               style={{ marginBottom: '16px' }}
             >
               <FiUser style={{ marginRight: 8 }} />
-              Lihat Profil
+              Profil
             </button>
           </div>
         )}
