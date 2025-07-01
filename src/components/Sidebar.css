@@ -126,6 +126,7 @@
   text-overflow: ellipsis;
   cursor: pointer;
   padding-right: 8px;
+  color: #333;
 }
 
 .action-icons {
@@ -200,4 +201,60 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.marquee-hover {
+  display: inline-block;
+  max-width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  position: relative;
+}
+
+.marquee-hover:hover {
+  animation: scroll-text 5s linear infinite;
+}
+
+@keyframes scroll-text {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.edit-input {
+  width: 100%;
+  font-size: 0.9rem;
+  padding: 2px 6px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+/* Untuk bungkus judul */
+.title-wrapper {
+  max-width: 140px;
+  overflow: hidden;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+/* Animasi jalan pas hover */
+.title-scroll {
+  display: inline-block;
+  transition: transform 10s linear;
+}
+
+/* Text-nya biar ga ke clip */
+.title-wrapper span {
+  display: inline-block;
+  padding-right: 100%; /* biar bisa jalan */
+}
+
+/* Jalanin animasi pas hover */
+.title-wrapper:hover .title-scroll {
+  transform: translateX(-100%);
 }

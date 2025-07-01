@@ -6,9 +6,10 @@ import './MessageBubble.css'
 interface Props {
   sender: 'user' | 'ai'
   text: string
+  image?: string // ⬅️ tambah image opsional
 }
 
-const MessageBubble = ({ sender, text }: Props) => {
+const MessageBubble = ({ sender, text, image }: Props) => {
   const [copied, setCopied] = useState(false)
 
   const handleCopy = () => {
@@ -19,20 +20,27 @@ const MessageBubble = ({ sender, text }: Props) => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2 }}
-      className={`bubble-wrapper ${sender}`}
-    >
-      <div className={`bubble ${sender}`}>
-        <div className="bubble-actions">
-          <button onClick={handleCopy} className="action-btn" title="Copy">
-            {copied ? <FiCheck /> : <FiCopy />}
-          </button>
-        </div>
-        <span>{text}</span>
+  initial={{ opacity: 0, y: 10 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.2 }}
+  className={`bubble-wrapper ${sender}`}
+>
+  <div className="bubble-content">
+    {image && (
+      <img src={image} alt="Uploaded" className="bubble-image-outside" />
+    )}
+
+    <div className={`bubble ${sender}`}>
+      <div className="bubble-actions">
+        <button onClick={handleCopy} className="action-btn" title="Copy">
+          {copied ? <FiCheck /> : <FiCopy />}
+        </button>
       </div>
-    </motion.div>
+      <span>{text}</span>
+    </div>
+  </div>
+</motion.div>
+
   )
 }
 

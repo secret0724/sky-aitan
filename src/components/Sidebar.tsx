@@ -10,12 +10,13 @@ import {
 import './Sidebar.css'
 import { TbMessagePlus } from 'react-icons/tb'
 
+
 interface SidebarProps {
   isOpen: boolean
   onClose: () => void
   onNewChat: () => void
   onSelectHistory: (id: string) => void
-  onRename: (id: string) => void
+  onRename: (id: string, newTitle: string) => void
   onDelete: (id: string) => void
   onTogglePin: (id: string) => void
   history: { id: string; title: string; pinned?: boolean }[]
@@ -33,9 +34,12 @@ const Sidebar = ({
 }: SidebarProps) => {
   const [showHistory, setShowHistory] = useState(true)
   const [menuOpenId, setMenuOpenId] = useState<string | null>(null)
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editedTitle, setEditedTitle] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
   const sidebarRef = useRef<HTMLDivElement>(null)
   const menuRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
@@ -51,9 +55,24 @@ const Sidebar = ({
     return () => document.removeEventListener('mousedown', handleOutsideClick)
   }, [onClose])
 
+  useEffect(() => {
+    if (editingId && inputRef.current) {
+      inputRef.current.focus()
+    }
+  }, [editingId])
+
   const filteredHistory = history
     .filter(h => h.title.toLowerCase().includes(searchTerm.toLowerCase()))
     .sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0))
+
+  const handleSaveEdit = (id: string) => {
+    const newTitle = editedTitle.trim()
+    if (newTitle) {
+      onRename(id, newTitle)
+    }
+    setEditingId(null)
+    setEditedTitle('')
+  }
 
   return (
     <aside ref={sidebarRef} className={`sidebar ${isOpen ? 'open' : ''}`}>
@@ -87,12 +106,32 @@ const Sidebar = ({
             {filteredHistory.map(item => (
               <li key={item.id} className="history-item">
                 <div className="history-title">
-                  <span
-                    onClick={() => onSelectHistory(item.id)}
-                    style={{ color: '#333' }}
-                  >
-                    {item.title}
-                  </span>
+                  {editingId === item.id ? (
+                    <input
+                      ref={inputRef}
+                      className="edit-input"
+                      value={editedTitle}
+                      onChange={e => setEditedTitle(e.target.value)}
+                      onBlur={() => handleSaveEdit(item.id)}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') handleSaveEdit(item.id)
+                        if (e.key === 'Escape') {
+                          setEditingId(null)
+                          setEditedTitle('')
+                        }
+                      }}
+                    />
+                  ) : (
+                    <div
+                      className="title-wrapper"
+                      onClick={() => onSelectHistory(item.id)}
+                      title={item.title}
+                    >
+                      <div className="title-scroll">
+                        <span>{item.title}</span>
+                      </div>
+                    </div>
+                  )}
                   <div className="action-icons">
                     <FiStar
                       className={`pin-icon ${item.pinned ? 'pinned' : ''}`}
@@ -101,9 +140,10 @@ const Sidebar = ({
                     />
                     <button
                       className="menu-icon"
-                      onClick={() =>
+                      onClick={() => {
                         setMenuOpenId(menuOpenId === item.id ? null : item.id)
-                      }
+                        setEditedTitle(item.title)
+                      }}
                     >
                       <FiMoreVertical />
                     </button>
@@ -111,7 +151,10 @@ const Sidebar = ({
                 </div>
                 {menuOpenId === item.id && (
                   <div className="floating-menu" ref={menuRef}>
-                    <button onClick={() => { onRename(item.id); setMenuOpenId(null) }}>
+                    <button onClick={() => {
+                      setEditingId(item.id)
+                      setMenuOpenId(null)
+                    }}>
                       <FiEdit2 /> Rename
                     </button>
                     <hr />

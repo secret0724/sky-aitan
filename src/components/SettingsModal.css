@@ -55,3 +55,51 @@
   border: 1px solid #ccc;
   font-size: 14px;
 }
+
+.ai-mode-section .mode-select-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mode-select-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f0f4f9;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #d0dce5;
+  transition: border 0.2s ease;
+}
+
+.mode-select-item:hover {
+  border-color: #007bff;
+}
+
+.mode-select-item select {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 15px;
+  color: #333;
+  font-weight: 500;
+  cursor: pointer;
+  appearance: none;
+}
+
+.mode-select-item select:focus {
+  background: #ffffff;
+}
+
+.mode-icon {
+  font-size: 20px;
+  color: #007bff;
+}
+
+.mode-desc {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.4;
+}

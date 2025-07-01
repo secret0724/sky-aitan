@@ -1,9 +1,9 @@
 // ChatPage.tsx
 import { useState, useEffect, useRef } from 'react'
-import { FiMenu } from 'react-icons/fi'
+import { FiX, FiMenu } from 'react-icons/fi'
 import { IoIosMic } from 'react-icons/io'
 import { IoSend } from 'react-icons/io5'
-import { FaPlus, FaUpload } from 'react-icons/fa'
+import { FaUpload } from 'react-icons/fa'
 import axios from 'axios'
 import MessageBubble from '../MessageBubble'
 import Sidebar from '../components/Sidebar'
@@ -12,11 +12,13 @@ import AboutModal from '../components/AboutModal'
 import HelpModal from '../components/HelpModal'
 import SettingsModal from '../components/SettingsModal'
 import ProfileModal from '../components/ProfileModal'
+import ImageWarningModal from '../components/ImageWarningModal'
 import './ChatPage.css'
 
 interface Message {
   sender: 'user' | 'ai'
   text: string
+  image?: string
   timestamp?: string
 }
 
@@ -40,6 +42,14 @@ const ChatPage = () => {
   const [history, setHistory] = useState<HistoryItem[]>([])
   const [activeId, setActiveId] = useState<string | null>(null)
   const [isAITyping, setIsAITyping] = useState(false)
+  const [isRecording, setIsRecording] = useState(false)
+  const [uploadWarningOpen, setUploadWarningOpen] = useState(false)
+  const [modeAI, setModeAI] = useState<'chat' | 'vision'>(() => localStorage.getItem('skyra-mode') === 'vision' ? 'vision' : 'chat')
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
+  const [previewImage, setPreviewImage] = useState<string | null>(null)
+  const [imageCaption, setImageCaption] = useState('')
+  const [isSendingImage, setIsSendingImage] = useState(false)
+  const recognitionRef = useRef<any>(null)
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
 
@@ -70,6 +80,49 @@ const ChatPage = () => {
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`
     }
   }, [input])
+
+  useEffect(() => {
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition
+      const recognition = new SpeechRecognition()
+      recognition.lang = 'id-ID'
+      recognition.continuous = false
+      recognition.interimResults = false
+
+      recognition.onstart = () => setIsRecording(true)
+      recognition.onend = () => setIsRecording(false)
+      recognition.onerror = () => setIsRecording(false)
+
+      recognition.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript
+        setInput(prev => prev + (prev ? ' ' : '') + transcript)
+      }
+
+      recognitionRef.current = recognition
+    }
+  }, [])
+
+  const handleMicClick = () => {
+    if (!recognitionRef.current) return
+    if (isRecording) {
+      recognitionRef.current.stop()
+    } else {
+      recognitionRef.current.start()
+    }
+  }
+
+  const handleUploadClick = () => {
+  if (modeAI === 'chat') {
+    setUploadWarningOpen(true)
+  } else {
+    fileInputRef.current?.click()
+  }
+}
+
+  const handleModeChange = (newMode: 'chat' | 'vision') => {
+    setModeAI(newMode)
+    localStorage.setItem('skyra-mode', newMode)
+  }
 
   const saveHistory = (newHistory: HistoryItem[]) => {
     const allSaved = localStorage.getItem('skyaitan-all-history')
@@ -184,7 +237,6 @@ const ChatPage = () => {
         item.id === activeId ? { ...item, messages: finalMessages } : item
       )
 
-      // Generate title jika baru pertama kali user ngetik
       const activeItem = history.find(h => h.id === activeId)
       if (activeItem && activeItem.title === 'Chat Baru') {
         const newTitle = await generateTitle(finalMessages)
@@ -207,11 +259,10 @@ const ChatPage = () => {
     }
   }
 
-  const handleRename = (id: string) => {
-    const newTitle = prompt('Ganti nama chat:')
-    if (!newTitle) return
+  const handleRename = (id: string, newTitle: string) => {
+    if (!newTitle.trim()) return
     const updated = history.map(item =>
-      item.id === id ? { ...item, title: newTitle } : item
+      item.id === id ? { ...item, title: newTitle.trim() } : item
     )
     saveHistory(updated)
   }
@@ -250,11 +301,83 @@ const ChatPage = () => {
   }, [messages])
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault()
+
+    // Kirim pesan
+    if (previewImage) {
+      handleSendImage()
+    } else {
       handleSend()
     }
   }
+}
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0]
+  if (!file) return
+
+  const reader = new FileReader()
+  reader.onloadend = () => {
+    setPreviewImage(reader.result as string)
+  }
+  reader.readAsDataURL(file)
+}
+
+const handleSendImage = async () => {
+  if (!previewImage) return
+
+  const newMsg: Message = {
+    sender: 'user',
+    text: imageCaption,
+    image: previewImage, // kirim gambarnya
+    timestamp: new Date().toISOString()
+  }
+
+  const updatedMessages = [...messages, newMsg]
+  setMessages(updatedMessages)
+  setPreviewImage(null)
+  setImageCaption('')
+  setIsSendingImage(true)
+
+  // Kirim ke AI
+  try {
+    const res = await fetch('/api/vision', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        image: previewImage,
+        caption: imageCaption
+      })
+    })
+
+    const data = await res.json()
+    const aiMsg: Message = {
+      sender: 'ai',
+      text: data.result || 'Maaf, tidak ada hasil analisis.',
+      timestamp: new Date().toISOString()
+    }
+
+    const finalMessages = [...updatedMessages, aiMsg]
+    setMessages(finalMessages)
+    setIsSendingImage(false)
+
+    const updatedHistory = history.map(item =>
+      item.id === activeId ? { ...item, messages: finalMessages } : item
+    )
+    saveHistory(updatedHistory)
+  } catch (err) {
+    console.error('Vision error:', err)
+    const errorMsg: Message = {
+      sender: 'ai',
+      text: 'Gagal menganalisis gambar.',
+      timestamp: new Date().toISOString()
+    }
+    setMessages([...updatedMessages, errorMsg])
+    setIsSendingImage(false)
+  }
+}
+
 
   return (
     <div className={`chat-layout ${sidebarOpen ? 'sidebar-open' : ''} ${userMenuOpen ? 'user-open' : ''}`}>
@@ -262,8 +385,9 @@ const ChatPage = () => {
       <UserPanel isOpen={userMenuOpen} onClose={() => setUserMenuOpen(false)} email={email || ''} onLogout={handleLogout} onOpenAbout={() => setAboutOpen(true)} onOpenHelp={() => setHelpOpen(true)} onOpenSettings={() => setSettingsOpen(true)} />
       <AboutModal isOpen={aboutOpen} onClose={() => setAboutOpen(false)} />
       <HelpModal isOpen={helpOpen} onClose={() => setHelpOpen(false)} />
-      <SettingsModal isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} onOpenProfile={() => { setSettingsOpen(false); setProfileOpen(true) }} />
+      <SettingsModal isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} onOpenProfile={() => { setSettingsOpen(false); setProfileOpen(true) }} modeAI={modeAI} onChangeMode={handleModeChange} />
       <ProfileModal isOpen={profileOpen} onClose={() => setProfileOpen(false)} onBack={() => { setProfileOpen(false); setSettingsOpen(true) }} email={email} />
+      <ImageWarningModal isOpen={uploadWarningOpen} onClose={() => setUploadWarningOpen(false)} onOpenSettings={() => { setUploadWarningOpen(false); setSettingsOpen(true) }} />
 
       <main className="chat-main">
         <header className="chat-header">
@@ -277,45 +401,75 @@ const ChatPage = () => {
         </header>
 
         <div className="chat-messages">
-          {messages.length === 1 && messages[0].sender === 'ai' && messages[0].text.includes('Skyra') ? (
-            <div className="welcome-screen">
-              <img src="/logo/Skyra-L1.png" alt="Skyra Logo" style={{ height: '80px' }} />
-              <h1>Hi, I'm Skyra.</h1>
-              <p>How can I help you today?</p>
-            </div>
-          ) : (
-            <>
-              {messages.map((msg, idx) => (
-                <MessageBubble key={idx} sender={msg.sender} text={msg.text} />
-              ))}
-              {isAITyping && (
-                <div className="typing-indicator"><span></span><span></span><span></span></div>
-              )}
-            </>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
+  {messages.length === 1 && messages[0].sender === 'ai' && messages[0].text.includes('Skyra') ? (
+    <div className="welcome-screen">
+      <img src="/logo/Skyra-L1.png" alt="Skyra Logo" style={{ height: '80px' }} />
+      <h1>Hi, I'm Skyra.</h1>
+      <p>How can I help you today?</p>
+    </div>
+  ) : (
+    <>
+      {messages.map((msg, idx) => (
+  <MessageBubble key={idx} sender={msg.sender} text={msg.text} image={msg.image} />
+))}
 
-        <div className="chat-input-container">
-          <div className="chat-input-inner">
-            <textarea
-              ref={textareaRef}
-              placeholder="Message Skyra"
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              className="floating-input"
-              rows={1}
-            />
-            <div className="button-row">
-              <button className="icon-btn"><FaPlus /></button>
-              <button className="icon-btn"><FaUpload /></button>
-              <button className="icon-btn"><IoIosMic /></button>
-              <button className="send-btn" onClick={handleSend}><IoSend /></button>
-            </div>
-          </div>
-        </div>
-      </main>
+
+      {isAITyping && (
+        <div className="typing-indicator"><span></span><span></span><span></span></div>
+      )}
+    </>
+  )}
+  <div ref={messagesEndRef} />
+</div>
+
+
+{/* CHAT INPUT AREA */}
+<div className="chat-input-container">
+  <div className="chat-input-inner">
+    {previewImage && (
+      <div className="image-preview-wrapper">
+        <img src={previewImage} alt="Preview" className="image-preview" />
+        
+        <button onClick={() => {
+            setPreviewImage(null)
+            setImageCaption('')
+          }} className="close-btn"><FiX /></button>
+      </div>
+    )}
+
+    <textarea
+      ref={textareaRef}
+      placeholder={previewImage ? "Tulis penjelasan gambar..." : "Message Skyra"}
+      value={previewImage ? imageCaption : input}
+      onChange={e => previewImage ? setImageCaption(e.target.value) : setInput(e.target.value)}
+      onKeyDown={handleKeyDown}
+      className="floating-input"
+      rows={1}
+    />
+
+    <input
+      type="file"
+      accept="image/*"
+      ref={fileInputRef}
+      style={{ display: 'none' }}
+      onChange={handleFileChange}
+    />
+
+    <div className="button-row">
+      <button className="icon-btn" onClick={handleUploadClick}><FaUpload /></button>
+      <button className={`icon-btn ${isRecording ? 'recording' : ''}`} onClick={handleMicClick}><IoIosMic /></button>
+      <button
+  className="send-btn"
+  onClick={previewImage ? handleSendImage : handleSend}
+  disabled={isSendingImage} // Disable pas loading kirim gambar
+>
+  {isSendingImage ? 'Mengirim...' : <IoSend />}
+</button>
+
+    </div>
+  </div>
+</div>
+</main>
     </div>
   )
 }
