@@ -469,7 +469,7 @@ const handleSendImage = async () => {
   onClick={previewImage ? handleSendImage : handleSend}
   disabled={isSendingImage} // Disable pas loading kirim gambar
 >
-  {isSendingImage ? 'Mengirim...' : <IoSend />}
+  {isSendingImage ? <IoSend /> : <IoSend />}
 </button>
 
     </div>
