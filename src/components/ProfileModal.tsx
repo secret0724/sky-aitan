@@ -23,12 +23,12 @@ const ProfileModal = ({ isOpen, onClose, onBack, email }: ProfileModalProps) => 
 
         <div className="profile-section">
           <label>Email:</label>
-          <input type="text" value={email} disabled />
+          <input type="text" value={email} />
         </div>
 
         <div className="profile-section">
           <label>Nama Tampilan:</label>
-          <input type="text" value="SkyAiTan User" disabled />
+          <input type="text" value="Skyra User" disabled />
         </div>
 
         <p style={{ fontSize: '13px', marginTop: '12px', color: '#888' }}>
