@@ -1,28 +1,34 @@
 // chatWithAI.ts
 import axios from "axios"
 
+const GEMINI_URL =
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=" +
+  import.meta.env.VITE_GEMINI_API_KEY
+
 // ==========================
 // 🔹 Generate Judul Chat
 // ==========================
 export const generateTitle = async (message: string) => {
-  const url =
-    "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" +
-    import.meta.env.VITE_GEMINI_API_KEY
+  try {
+    const res = await axios.post(GEMINI_URL, {
+      contents: [
+        {
+          parts: [
+            { text: `Buat judul singkat maksimal 4 kata berdasarkan pesan ini: ${message}` }
+          ]
+        }
+      ]
+    })
 
-  const res = await axios.post(url, {
-    contents: [
-      {
-        role: "user",
-        parts: [
-          { text: `Buat judul singkat maksimal 4 kata berdasarkan isi pesan ini: ${message}` }
-        ]
-      }
-    ]
-  })
-
-  return res.data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "Chat Baru"
+    return (
+      res.data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ||
+      "Chat Baru"
+    )
+  } catch (e) {
+    console.error("Gemini Title Error:", e)
+    return "Chat Baru"
+  }
 }
-
 
 // ==========================
 // 🔹 Chat + Vision Gemini
@@ -42,18 +48,20 @@ export const chatWithAI = async (text: string, imageBase64?: string) => {
       })
     }
 
-    const url =
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" +
-      import.meta.env.VITE_GEMINI_API_KEY
-
-    const res = await axios.post(url, {
-      contents: [{ role: "user", parts }]
+    const res = await axios.post(GEMINI_URL, {
+      contents: [
+        {
+          parts
+        }
+      ]
     })
 
-    return res.data?.candidates?.[0]?.content?.parts?.[0]?.text || "AI tidak memberikan respons."
+    return (
+      res.data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+      "AI tidak memberikan respons."
+    )
   } catch (error) {
     console.error("Gemini Error:", error)
     return "❌ Gagal terhubung ke AI Gemini."
   }
 }
-
