@@ -5,7 +5,6 @@ import {
   FiMoreVertical,
   FiEdit2,
   FiTrash2,
-  FiSearch,
   FiStar
 } from 'react-icons/fi'
 import { TbMessagePlus } from 'react-icons/tb'
@@ -24,7 +23,6 @@ interface SidebarProps {
 
 const Sidebar = ({
   isOpen,
-  onClose,
   onNewChat,
   onSelectHistory,
   onRename,
@@ -36,7 +34,6 @@ const Sidebar = ({
   const [menuOpenId, setMenuOpenId] = useState<string | null>(null)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editedTitle, setEditedTitle] = useState("")
-  const [searchTerm] = useState("")
 
   const sidebarRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -96,23 +93,30 @@ const Sidebar = ({
                   onClick={() => onTogglePin(item.id)}
                 />
 
-                <FiMoreVertical onClick={() =>
-                  setMenuOpenId(menuOpenId === item.id ? null : item.id)
-                } />
+                <FiMoreVertical
+                  onClick={() =>
+                    setMenuOpenId(menuOpenId === item.id ? null : item.id)
+                  }
+                />
 
                 {menuOpenId === item.id && (
                   <div className="dropdown">
-                    <div onClick={() => {
-                      setEditingId(item.id)
-                      setEditedTitle(item.title)
-                      setMenuOpenId(null)
-                    }}>
+                    <div
+                      onClick={() => {
+                        setEditingId(item.id)
+                        setEditedTitle(item.title)
+                        setMenuOpenId(null)
+                      }}
+                    >
                       <FiEdit2 /> Rename
                     </div>
-                    <div onClick={() => {
-                      onDelete(item.id)
-                      setMenuOpenId(null)
-                    }}>
+
+                    <div
+                      onClick={() => {
+                        onDelete(item.id)
+                        setMenuOpenId(null)
+                      }}
+                    >
                       <FiTrash2 /> Delete
                     </div>
                   </div>
