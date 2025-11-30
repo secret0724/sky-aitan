@@ -6,7 +6,7 @@ import axios from "axios"
 // ==========================
 export const generateTitle = async (message: string) => {
   const url =
-    "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=" +
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" +
     import.meta.env.VITE_GEMINI_API_KEY
 
   const res = await axios.post(url, {
@@ -22,6 +22,7 @@ export const generateTitle = async (message: string) => {
 
   return res.data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "Chat Baru"
 }
+
 
 // ==========================
 // 🔹 Chat + Vision Gemini
@@ -42,7 +43,7 @@ export const chatWithAI = async (text: string, imageBase64?: string) => {
     }
 
     const url =
-      "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=" +
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" +
       import.meta.env.VITE_GEMINI_API_KEY
 
     const res = await axios.post(url, {
@@ -55,3 +56,4 @@ export const chatWithAI = async (text: string, imageBase64?: string) => {
     return "❌ Gagal terhubung ke AI Gemini."
   }
 }
+

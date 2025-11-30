@@ -1,4 +1,4 @@
-// Sidebarr.tsx
+// Sidebar.tsx
 import { useEffect, useRef, useState } from 'react'
 import {
   FiMessageCircle,
