@@ -1,67 +1,59 @@
 // chatWithAI.ts
-import axios from "axios"
+import axios from 'axios'
 
-const GEMINI_URL =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=" +
-  import.meta.env.VITE_GEMINI_API_KEY
-
-// ==========================
-// 🔹 Generate Judul Chat
-// ==========================
+// 🔹 1. Generate Judul Otomatis
 export const generateTitle = async (message: string) => {
-  try {
-    const res = await axios.post(GEMINI_URL, {
-      contents: [
+  const res = await axios.post(
+    'https://openrouter.ai/api/v1/chat/completions',
+    {
+      model: 'mistralai/mixtral-8x7b',
+      messages: [
         {
-          parts: [
-            { text: `Buat judul singkat maksimal 4 kata berdasarkan pesan ini: ${message}` }
-          ]
+          role: 'system',
+          content: 'Buat judul singkat yang cocok untuk merangkum isi pesan user. Maksimal 4 kata. Jangan pakai tanda kutip atau kata "judul:".'
+        },
+        {
+          role: 'user',
+          content: message
         }
-      ]
-    })
+      ],
+      max_tokens: 20,
+      temperature: 0.7,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`,
+        'Content-Type': 'application/json',
+      }
+    }
+  )
 
-    return (
-      res.data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ||
-      "Chat Baru"
-    )
-  } catch (e) {
-    console.error("Gemini Title Error:", e)
-    return "Chat Baru"
-  }
+  return res.data.choices[0].message.content.trim()
 }
 
-// ==========================
-// 🔹 Chat + Vision Gemini
-// ==========================
-export const chatWithAI = async (text: string, imageBase64?: string) => {
+// 🔹 2. Kirim gambar + prompt ke Supabase Function (Skyra Vision)
+export const sendImageToVisionAI = async (imageBase64: string, prompt: string) => {
   try {
-    const parts: any[] = []
+    const res = await fetch("https://kdwjufbyizbfufdymumh.functions.supabase.co/vision", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        image: imageBase64,
+        prompt,
+      }),
+    });
 
-    if (text) parts.push({ text })
+    const data = await res.json();
 
-    if (imageBase64) {
-      parts.push({
-        inline_data: {
-          mime_type: "image/jpeg",
-          data: imageBase64.replace(/^data:image\/\w+;base64,/, "")
-        }
-      })
+    if (!res.ok) {
+      throw new Error(data.error || 'Unknown error')
     }
 
-    const res = await axios.post(GEMINI_URL, {
-      contents: [
-        {
-          parts
-        }
-      ]
-    })
-
-    return (
-      res.data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-      "AI tidak memberikan respons."
-    )
-  } catch (error) {
-    console.error("Gemini Error:", error)
-    return "❌ Gagal terhubung ke AI Gemini."
+    return data.result || 'Berhasil dianalisis!'
+  } catch (err: any) {
+    console.error("Vision error:", err)
+    return '❌ Gagal menganalisis gambar'
   }
 }

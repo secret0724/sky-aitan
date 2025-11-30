@@ -1,63 +1,93 @@
-import { FiX } from "react-icons/fi";
-import "./SettingsModal.css";
+import './SettingsModal.css'
+import { FiXCircle, FiUser, FiSun } from "react-icons/fi"
+import { FiMessageSquare, FiImage } from 'react-icons/fi'
 
 interface SettingsModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onOpenProfile: () => void;
+  isOpen: boolean
+  onClose: () => void
+  onOpenProfile: () => void
+  modeAI: 'chat' | 'vision'
+  onChangeMode: (mode: 'chat' | 'vision') => void
 }
 
-const SettingsModal = ({ isOpen, onClose, onOpenProfile }: SettingsModalProps) => {
-  if (!isOpen) return null;
+const SettingsModal = ({
+  isOpen,
+  onClose,
+  onOpenProfile,
+  modeAI,
+  onChangeMode
+}: SettingsModalProps) => {
+  if (!isOpen) return null
+
+  const user = JSON.parse(localStorage.getItem('user') || '{}')
+  const isLoggedIn = !!user.email
 
   return (
-    <div className="settings-modal-overlay">
-      <div className="settings-modal">
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={e => e.stopPropagation()}>
+        <button className="close-btn" onClick={onClose}>
+          <FiXCircle />
+        </button>
+        <h2>Setting</h2>
 
-        {/* Header */}
-        <div className="settings-header">
-          <h2>Settings</h2>
-          <button className="close-btn" onClick={onClose}>
-            <FiX size={20} />
-          </button>
-        </div>
-
-        {/* Body */}
-        <div className="settings-content">
-
-          {/* MODE AI */}
-          <div className="setting-section">
-            <h3 className="section-title">AI Mode</h3>
-
-            <div className="mode-buttons">
-              <button
-                className="mode-btn active"
-                onClick={() => localStorage.setItem("skyra-mode", "chat")}
-              >
-                Skyra Chat
-              </button>
-
-              <button
-                className="mode-btn"
-                onClick={() => localStorage.setItem("skyra-mode", "vision")}
-              >
-                Skyra Analisis Gambar
-              </button>
-            </div>
-          </div>
-
-          {/* PROFILE */}
-          <div className="setting-section">
-            <h3 className="section-title">Account</h3>
-            <button className="profile-btn" onClick={onOpenProfile}>
-              Edit Profile
+        {isLoggedIn && (
+          <div className="settings-section">
+            <button
+              className="profile-access-btn"
+              onClick={onOpenProfile}
+              style={{ marginBottom: '16px' }}
+            >
+              <FiUser style={{ marginRight: 8 }} />
+              Profil
             </button>
           </div>
+        )}
 
+        <div className="settings-section">
+          <label>Nama (masih tahap pengembangan):</label>
+          <input type="text" placeholder="Skyra" disabled />
         </div>
+
+        <div className="settings-section">
+          <label><FiSun style={{ marginRight: '6px' }} /> Mode Tema:</label>
+          <select disabled>
+            <option>Terang (default)</option>
+            <option>Gelap</option>
+          </select>
+        </div>
+
+{/* Mode AI */}
+<div className="settings-section ai-mode-section">
+  <label>Skyra Mode:</label>
+  <div className="mode-select-wrapper">
+    <div className="mode-select-item">
+      {modeAI === 'chat' ? (
+        <FiMessageSquare className="mode-icon" />
+      ) : (
+        <FiImage className="mode-icon" />
+      )}
+      <select
+        value={modeAI}
+        onChange={e => onChangeMode(e.target.value as 'chat' | 'vision')}
+      >
+        <option value="chat">Skyra Mode Chat</option>
+        <option value="vision">Skyra Mode Analisis Gambar</option>
+      </select>
+    </div>
+    <span className="mode-desc">
+      {modeAI === 'chat'
+        ? 'Mode untuk percakapan teks interaktif dengan AI.'
+        : 'Mode untuk mengirim gambar dan menerima analisis dari Skyra.'}
+    </span>
+  </div>
+</div>
+
+        <p style={{ fontSize: '13px', marginTop: '12px', color: '#888' }}>
+          Mohon maaf atas ketidak nyamanannya. Beberapa fitur saat ini masih dalam tahap pengembangan.
+        </p>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default SettingsModal;
+export default SettingsModal
